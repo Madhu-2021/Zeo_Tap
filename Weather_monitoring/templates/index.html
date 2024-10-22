@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Monitoring Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Weather Monitoring Dashboard</h1>
+    <div id="current-weather"></div>
+    <div id="daily-summary"></div>
+    <canvas id="temperatureChart"></canvas>
+
+    <script>
+        function updateCurrentWeather() {
+            fetch('/api/current_weather')
+                .then(response => response.json())
+                .then(data => {
+                    const weatherDiv = document.getElementById('current-weather');
+                    weatherDiv.innerHTML = '<h2>Current Weather</h2>';
+                    data.forEach(city => {
+                        weatherDiv.innerHTML += `
+                            <p>${city.city}: ${city.temp.toFixed(1)}°C, ${city.main}</p>
+                        `;
+                    });
+                });
+        }
+
+        function updateDailySummary() {
+            fetch('/api/daily_summary')
+                .then(response => response.json())
+                .then(data => {
+                    const summaryDiv = document.getElementById('daily-summary');
+                    summaryDiv.innerHTML = '<h2>Daily Summary</h2>';
+                    for (const [city, summary] of Object.entries(data)) {
+                        if (summary) {
+                            summaryDiv.innerHTML += `
+                                <p>${city}: Avg ${summary.avg_temp.toFixed(1)}°C, 
+                                Max ${summary.max_temp.toFixed(1)}°C, 
+                                Min ${summary.min_temp.toFixed(1)}°C, 
+                                Dominant: ${summary.dominant_condition}</p>
+                            `;
+                        }
+                    }
+                });
+        }
+
+        function updateChart() {
+            fetch('/api/current_weather')
+                .then(response => response.json())
+                .then(data => {
+                    const ctx = document.getElementById('temperatureChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.map(city => city.city),
+                            datasets: [{
+                                label: 'Temperature (°C)',
+                                data: data.map(city => city.temp),
+                                backgroundColor: 'rgba(75, 192, 192, 0.6)'
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                });
+        }
+
+        updateCurrentWeather();
+        updateDailySummary();
+        updateChart();
+        setInterval(updateCurrentWeather, 300000);  // Update every 5 minutes
+        setInterval(updateDailySummary, 3600000);   // Update every hour
+        setInterval(updateChart, 300000);           // Update every 5 minutes
+    </script>
+</body>
+</html>
