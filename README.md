@@ -36,7 +36,7 @@ Make sure you have the following installed:
 1. **Clone the repository:**
 
    ```bash
-   git clone 
+   git clone https://github.com/Madhu-2021/Zeo_Tap
    cd rule-engine-api
    ```
 
@@ -152,7 +152,7 @@ Make sure you have the following installed:
 1. **Clone the repository:**
 
    ```bash
-   git clone 
+   git clone https://github.com/Madhu-2021/Zeo_Tap
    cd weather-monitoring-dashboard
    ```
 
